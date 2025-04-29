@@ -6,9 +6,8 @@ export default function Home() {
 
   // ユーザーの生年月日と年齢を計算
   const [birthYear, setBirthYear] = useState<number>(1990);
-  const [birthMonth, setBirthMonth] = useState<number>(3);
-  const [birthDay, setBirthDay] = useState<number>(24);
-  const [currentAge, setCurrentAge] = useState(0);
+  const [birthMonth, setBirthMonth] = useState<number>(1);
+  const [birthDay, setBirthDay] = useState<number>(1);
 
   // 生年月日を基に年齢を計算する関数
   const calculateAge = (year: number, month: number, day: number) => {
@@ -23,6 +22,8 @@ export default function Home() {
     }
     return age;
   };
+
+  const [currentAge, setCurrentAge] = useState(calculateAge(birthYear, birthMonth, birthDay));
 
   // 生年月日の変更処理
   const handleDateChange = () => {
@@ -144,4 +145,3 @@ export default function Home() {
     </div>
   );
 }
-
