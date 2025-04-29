@@ -13,6 +13,7 @@ export default function Home() {
   const [mealCountPerDay, setMealCountPerDay] = useState<number>(3); // 1日の食事回数の状態
   const [remainingMeals, setRemainingMeals] = useState<number>(0); // 残り食事回数の状態
   const [remainingWeekends, setRemainingWeekends] = useState<number>(0); // 残り週末回数の状態
+  const [remainingSummers, setRemainingSummers] = useState<number>(0); // 残り夏回数の状態
 
   const calculateRemainingDays = (year: number, month: number, day: number) => {
     const birthDate = new Date(year, month - 1, day);
@@ -45,6 +46,11 @@ export default function Home() {
     return weekendsLeft;
   };
 
+  const calculateRemainingSummers = (daysLeft: number) => {
+    const yearsLeft = Math.floor(daysLeft / 365); // 残り年数を計算
+    return yearsLeft; // 残り年数がそのまま夏の回数としてカウントされる
+  };
+
   useEffect(() => {
     const daysLeft = calculateRemainingDays(birthYear, birthMonth, birthDay);
     setRemainingDays(daysLeft);
@@ -53,11 +59,12 @@ export default function Home() {
     const progress = ((totalDays - daysLeft) / totalDays) * 100;
     setProgressPercentage(parseFloat(progress.toFixed(2)));
 
-    // 週末回数の計算とstateの更新
     const weekendsLeft = calculateRemainingWeekends(daysLeft);
     setRemainingWeekends(weekendsLeft);
 
-    // 残り食事回数の計算
+    const summersLeft = calculateRemainingSummers(daysLeft);
+    setRemainingSummers(summersLeft);
+
     const remainingMeals = remainingDays * mealCountPerDay;
     setRemainingMeals(remainingMeals);
   }, [birthYear, birthMonth, birthDay, mealCountPerDay, remainingDays]);
@@ -179,8 +186,13 @@ export default function Home() {
           </div>
 
           <div className="bg-gradient-to-r from-green-300 to-green-500 text-white p-6 rounded-xl shadow-md">
-            <h2 className="text-2xl font-semibold">🎉 残り週末回数</h2>
+            <h2 className="text-2xl font-semibold">🛋️ 残り週末回数</h2>
             <p className="text-4xl font-bold">{remainingWeekends} 回</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-orange-300 to-orange-500 text-white p-6 rounded-xl shadow-md">
+            <h2 className="text-2xl font-semibold">🏖️ 残り夏が来る回数</h2>
+            <p className="text-4xl font-bold">{remainingSummers} 回</p>
           </div>
 
           <div className="mt-12 text-center text-lg font-semibold text-gray-700">
