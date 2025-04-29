@@ -89,12 +89,12 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-5">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
         <h1 className="text-4xl font-bold text-center text-indigo-700 mb-8">
-          あなたの残りの時間
+          あなたの残り時間
         </h1>
 
         <div className="mb-6 text-center">
           <label htmlFor="birthYear" className="text-xl font-semibold text-gray-700">
-            生年月日を選択してください
+            生年月日を選択
           </label>
           <div className="mt-2 flex justify-center space-x-4">
             <select
@@ -141,17 +141,21 @@ export default function Home() {
 
         <div className="mb-6 text-center">
           <label htmlFor="mealCount" className="text-xl font-semibold text-gray-700">
-            1日の食事回数を入力してください
+            1日の食事回数を選択
           </label>
           <div className="mt-2">
-            <input
+            <select
               id="mealCount"
-              type="number"
               value={mealCountPerDay}
-              onChange={handleMealCountChange}
-              className="p-3 border-2 border-gray-300 rounded-md text-black w-full max-w-xs mx-auto"
-              min="1"
-            />
+              onChange={(e) => setMealCountPerDay(Number(e.target.value))}
+              className="p-3 border-2 border-gray-300 rounded-md text-black mx-auto"
+            >
+              {[...Array(10)].map((_, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
