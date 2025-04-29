@@ -1,57 +1,61 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-  const lifeExpectancy = 80; // 予測寿命を80歳に固定
+  const lifeExpectancy = 80;
 
-  // ユーザーの生年月日と年齢を計算
-  const [birthYear, setBirthYear] = useState<number>(1990);
-  const [birthMonth, setBirthMonth] = useState<number>(1);
-  const [birthDay, setBirthDay] = useState<number>(1);
+  const today = new Date();
+  const [birthYear, setBirthYear] = useState<number>(today.getFullYear());
+  const [birthMonth, setBirthMonth] = useState<number>(today.getMonth() + 1);
+  const [birthDay, setBirthDay] = useState<number>(today.getDate());
 
-  // 生年月日を基に年齢を計算する関数
-  const calculateAge = (year: number, month: number, day: number) => {
+  const [remainingDays, setRemainingDays] = useState<number>(0);
+  const [progressPercentage, setProgressPercentage] = useState<number>(0);
+
+  const calculateRemainingDays = (year: number, month: number, day: number) => {
+    const birthDate = new Date(year, month - 1, day);
+    const eightyYearsLater = new Date(birthDate);
+    eightyYearsLater.setFullYear(birthDate.getFullYear() + 80);
+
     const today = new Date();
-    const birth = new Date(year, month - 1, day); // JavaScriptの月は0始まり
-    const age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
+    today.setHours(0, 0, 0, 0);
+    birthDate.setHours(0, 0, 0, 0);
+    eightyYearsLater.setHours(0, 0, 0, 0);
 
-    // まだ誕生日が来ていない場合、年齢を1つ引く
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      return age - 1;
+    if (today < birthDate || today >= eightyYearsLater) {
+      return 0;
     }
-    return age;
+
+    const diffTime = eightyYearsLater.getTime() - today.getTime();
+    const daysLeft = diffTime / (1000 * 60 * 60 * 24);
+
+    return Math.round(daysLeft);
   };
 
-  const [currentAge, setCurrentAge] = useState(calculateAge(birthYear, birthMonth, birthDay));
+  // 💡 birthYear/birthMonth/birthDayの変化を監視する
+  useEffect(() => {
+    const daysLeft = calculateRemainingDays(birthYear, birthMonth, birthDay);
+    setRemainingDays(daysLeft);
 
-  // 生年月日の変更処理
-  const handleDateChange = () => {
-    setCurrentAge(calculateAge(birthYear, birthMonth, birthDay));
-  };
+    const totalDays = lifeExpectancy * 365; // ざっくり365日ベース
+    const progress = ((totalDays - daysLeft) / totalDays) * 100;
+    setProgressPercentage(parseFloat(progress.toFixed(2)));
+  }, [birthYear, birthMonth, birthDay]); // ←依存配列！
 
-  // 生年月日の変更時に年齢を再計算
   const handleBirthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setBirthYear(Number(event.target.value));
-    handleDateChange();
   };
 
   const handleBirthMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setBirthMonth(Number(event.target.value));
-    handleDateChange();
   };
 
   const handleBirthDayChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setBirthDay(Number(event.target.value));
-    handleDateChange();
   };
 
-  // 残り日数と食事回数の計算
-  const remainingDays = (lifeExpectancy - currentAge) * 365; // 残り日数
+  // 残り食事回数の計算
   const remainingMeals = remainingDays * 3; // 1日3食を想定
-
-  // パーセンテージの計算
-  const progressPercentage = ((currentAge / lifeExpectancy) * 100).toFixed(2);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-5">
@@ -73,7 +77,7 @@ export default function Home() {
               className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(100)].map((_, index) => {
-                const year = 2023 - index;
+                const year = 2025 - index;
                 return (
                   <option key={year} value={year}>
                     {year}
