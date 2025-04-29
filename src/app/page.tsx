@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 export default function Home() {
   const lifeExpectancy = 80;
 
-  const today = new Date();
   const [birthYear, setBirthYear] = useState<number>(1995);
-  const [birthMonth, setBirthMonth] = useState<number>(today.getMonth() + 1);
-  const [birthDay, setBirthDay] = useState<number>(today.getDate());
+  const [birthMonth, setBirthMonth] = useState<number>(1);
+  const [birthDay, setBirthDay] = useState<number>(1);
 
   const [remainingDays, setRemainingDays] = useState<number>(0);
   const [progressPercentage, setProgressPercentage] = useState<number>(0);
   const [mealCountPerDay, setMealCountPerDay] = useState<number>(3); // 1日の食事回数の状態
+  const [remainingMeals, setRemainingMeals] = useState<number>(0); // 残り食事回数の状態
+  const [remainingWeekends, setRemainingWeekends] = useState<number>(0); // 残り週末回数の状態
 
   const calculateRemainingDays = (year: number, month: number, day: number) => {
     const birthDate = new Date(year, month - 1, day);
@@ -33,7 +34,17 @@ export default function Home() {
     return Math.round(daysLeft);
   };
 
-  // 💡 birthYear/birthMonth/birthDayの変化を監視する
+  const calculateRemainingWeekends = (daysLeft: number) => {
+    const weekendsLeft = Math.floor(daysLeft / 7);
+    const remainingDaysInWeek = daysLeft % 7;
+    if (remainingDaysInWeek >= 6) {
+      return weekendsLeft + 2;
+    } else if (remainingDaysInWeek >= 5) {
+      return weekendsLeft + 1;
+    }
+    return weekendsLeft;
+  };
+
   useEffect(() => {
     const daysLeft = calculateRemainingDays(birthYear, birthMonth, birthDay);
     setRemainingDays(daysLeft);
@@ -41,7 +52,15 @@ export default function Home() {
     const totalDays = lifeExpectancy * 365; // ざっくり365日ベース
     const progress = ((totalDays - daysLeft) / totalDays) * 100;
     setProgressPercentage(parseFloat(progress.toFixed(2)));
-  }, [birthYear, birthMonth, birthDay]); // ←依存配列！
+
+    // 週末回数の計算とstateの更新
+    const weekendsLeft = calculateRemainingWeekends(daysLeft);
+    setRemainingWeekends(weekendsLeft);
+
+    // 残り食事回数の計算
+    const remainingMeals = remainingDays * mealCountPerDay;
+    setRemainingMeals(remainingMeals);
+  }, [birthYear, birthMonth, birthDay, mealCountPerDay, remainingDays]);
 
   const handleBirthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setBirthYear(Number(event.target.value));
@@ -55,10 +74,6 @@ export default function Home() {
     setBirthDay(Number(event.target.value));
   };
 
-  // 残り食事回数の計算
-  const remainingMeals = remainingDays * mealCountPerDay; // 入力された食事回数を反映
-
-  // 食事回数の変更処理
   const handleMealCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMealCountPerDay(Number(event.target.value));
   };
@@ -70,7 +85,6 @@ export default function Home() {
           あなたの残りの時間
         </h1>
 
-        {/* 生年月日セレクタ */}
         <div className="mb-6 text-center">
           <label htmlFor="birthYear" className="text-xl font-semibold text-gray-700">
             生年月日を選択してください
@@ -118,7 +132,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 1日の食事回数 */}
         <div className="mb-6 text-center">
           <label htmlFor="mealCount" className="text-xl font-semibold text-gray-700">
             1日の食事回数を入力してください
@@ -135,15 +148,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 80歳まで生きるとしたら */}
         <div className="mb-8 text-center text-xl text-gray-600">
           80歳まで生きるとしたら...
         </div>
 
         <div className="space-y-6">
-          {/* 残り日数 */}
           <div className="bg-gradient-to-r from-teal-300 to-teal-500 text-white p-6 rounded-xl shadow-md">
-            <h2 className="text-2xl font-semibold">残り日数</h2>
+            <h2 className="text-2xl font-semibold">📅 残り日数</h2>
             <p className="text-4xl font-bold">{remainingDays} 日</p>
             <div className="mt-4">
               <div className="relative pt-1">
@@ -162,10 +173,18 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 残り食事回数 */}
           <div className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-white p-6 rounded-xl shadow-md">
-            <h2 className="text-2xl font-semibold">残り食事回数</h2>
+            <h2 className="text-2xl font-semibold">🍽️ 残り食事回数</h2>
             <p className="text-4xl font-bold">{remainingMeals} 回</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-green-300 to-green-500 text-white p-6 rounded-xl shadow-md">
+            <h2 className="text-2xl font-semibold">🎉 残り週末回数</h2>
+            <p className="text-4xl font-bold">{remainingWeekends} 回</p>
+          </div>
+
+          <div className="mt-12 text-center text-lg font-semibold text-gray-700">
+            <p>⏳ 時間を大切にしてください。</p>
           </div>
         </div>
       </div>
