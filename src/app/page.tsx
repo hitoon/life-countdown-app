@@ -70,7 +70,7 @@ export default function Home() {
               id="birthYear"
               value={birthYear}
               onChange={handleBirthYearChange}
-              className="p-3 border-2 border-gray-300 rounded-md"
+              className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(100)].map((_, index) => {
                 const year = 2023 - index;
@@ -85,7 +85,7 @@ export default function Home() {
               id="birthMonth"
               value={birthMonth}
               onChange={handleBirthMonthChange}
-              className="p-3 border-2 border-gray-300 rounded-md"
+              className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(12)].map((_, index) => (
                 <option key={index + 1} value={index + 1}>
@@ -97,7 +97,7 @@ export default function Home() {
               id="birthDay"
               value={birthDay}
               onChange={handleBirthDayChange}
-              className="p-3 border-2 border-gray-300 rounded-md"
+              className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(31)].map((_, index) => (
                 <option key={index + 1} value={index + 1}>
