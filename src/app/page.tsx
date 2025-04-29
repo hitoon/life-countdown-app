@@ -69,22 +69,6 @@ export default function Home() {
     setRemainingMeals(remainingMeals);
   }, [birthYear, birthMonth, birthDay, mealCountPerDay, remainingDays]);
 
-  const handleBirthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBirthYear(Number(event.target.value));
-  };
-
-  const handleBirthMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBirthMonth(Number(event.target.value));
-  };
-
-  const handleBirthDayChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBirthDay(Number(event.target.value));
-  };
-
-  const handleMealCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMealCountPerDay(Number(event.target.value));
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-5">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
@@ -100,7 +84,7 @@ export default function Home() {
             <select
               id="birthYear"
               value={birthYear}
-              onChange={handleBirthYearChange}
+              onChange={(e) => setBirthYear(Number(e.target.value))}
               className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(100)].map((_, index) => {
@@ -115,7 +99,7 @@ export default function Home() {
             <select
               id="birthMonth"
               value={birthMonth}
-              onChange={handleBirthMonthChange}
+              onChange={(e) => setBirthMonth(Number(e.target.value))}
               className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(12)].map((_, index) => (
@@ -127,7 +111,7 @@ export default function Home() {
             <select
               id="birthDay"
               value={birthDay}
-              onChange={handleBirthDayChange}
+              onChange={(e) => setBirthDay(Number(e.target.value))}
               className="p-3 border-2 border-gray-300 rounded-md text-black"
             >
               {[...Array(31)].map((_, index) => (
