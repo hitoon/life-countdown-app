@@ -5,12 +5,13 @@ export default function Home() {
   const lifeExpectancy = 80;
 
   const today = new Date();
-  const [birthYear, setBirthYear] = useState<number>(today.getFullYear());
+  const [birthYear, setBirthYear] = useState<number>(1995);
   const [birthMonth, setBirthMonth] = useState<number>(today.getMonth() + 1);
   const [birthDay, setBirthDay] = useState<number>(today.getDate());
 
   const [remainingDays, setRemainingDays] = useState<number>(0);
   const [progressPercentage, setProgressPercentage] = useState<number>(0);
+  const [mealCountPerDay, setMealCountPerDay] = useState<number>(3); // 1日の食事回数の状態
 
   const calculateRemainingDays = (year: number, month: number, day: number) => {
     const birthDate = new Date(year, month - 1, day);
@@ -55,7 +56,12 @@ export default function Home() {
   };
 
   // 残り食事回数の計算
-  const remainingMeals = remainingDays * 3; // 1日3食を想定
+  const remainingMeals = remainingDays * mealCountPerDay; // 入力された食事回数を反映
+
+  // 食事回数の変更処理
+  const handleMealCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMealCountPerDay(Number(event.target.value));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-5">
@@ -112,9 +118,26 @@ export default function Home() {
           </div>
         </div>
 
+        {/* 1日の食事回数 */}
+        <div className="mb-6 text-center">
+          <label htmlFor="mealCount" className="text-xl font-semibold text-gray-700">
+            1日の食事回数を入力してください
+          </label>
+          <div className="mt-2">
+            <input
+              id="mealCount"
+              type="number"
+              value={mealCountPerDay}
+              onChange={handleMealCountChange}
+              className="p-3 border-2 border-gray-300 rounded-md text-black w-full max-w-xs mx-auto"
+              min="1"
+            />
+          </div>
+        </div>
+
         {/* 80歳まで生きるとしたら */}
         <div className="mb-8 text-center text-xl text-gray-600">
-          80歳まで生きるとしたら
+          80歳まで生きるとしたら...
         </div>
 
         <div className="space-y-6">
@@ -125,7 +148,7 @@ export default function Home() {
             <div className="mt-4">
               <div className="relative pt-1">
                 <div className="flex mb-2 items-center justify-between">
-                  <span className="text-sm font-medium text-teal-800">残り時間</span>
+                  <span className="text-sm font-medium text-teal-800">残り</span>
                 </div>
                 <div className="flex mb-2 items-center justify-between">
                   <div className="w-full bg-teal-200 rounded-full h-2.5">
