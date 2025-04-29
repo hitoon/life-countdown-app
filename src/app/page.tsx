@@ -1,103 +1,147 @@
-import Image from "next/image";
+'use client';
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const lifeExpectancy = 80; // 予測寿命を80歳に固定
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // ユーザーの生年月日と年齢を計算
+  const [birthYear, setBirthYear] = useState<number>(1990);
+  const [birthMonth, setBirthMonth] = useState<number>(3);
+  const [birthDay, setBirthDay] = useState<number>(24);
+  const [currentAge, setCurrentAge] = useState(0);
+
+  // 生年月日を基に年齢を計算する関数
+  const calculateAge = (year: number, month: number, day: number) => {
+    const today = new Date();
+    const birth = new Date(year, month - 1, day); // JavaScriptの月は0始まり
+    const age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+
+    // まだ誕生日が来ていない場合、年齢を1つ引く
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      return age - 1;
+    }
+    return age;
+  };
+
+  // 生年月日の変更処理
+  const handleDateChange = () => {
+    setCurrentAge(calculateAge(birthYear, birthMonth, birthDay));
+  };
+
+  // 生年月日の変更時に年齢を再計算
+  const handleBirthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setBirthYear(Number(event.target.value));
+    handleDateChange();
+  };
+
+  const handleBirthMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setBirthMonth(Number(event.target.value));
+    handleDateChange();
+  };
+
+  const handleBirthDayChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setBirthDay(Number(event.target.value));
+    handleDateChange();
+  };
+
+  // 残り日数と食事回数の計算
+  const remainingDays = (lifeExpectancy - currentAge) * 365; // 残り日数
+  const remainingMeals = remainingDays * 3; // 1日3食を想定
+
+  // パーセンテージの計算
+  const progressPercentage = ((currentAge / lifeExpectancy) * 100).toFixed(2);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-5">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
+        <h1 className="text-4xl font-bold text-center text-indigo-700 mb-8">
+          あなたの残りの時間
+        </h1>
+
+        {/* 生年月日セレクタ */}
+        <div className="mb-6 text-center">
+          <label htmlFor="birthYear" className="text-xl font-semibold text-gray-700">
+            生年月日を選択してください
+          </label>
+          <div className="mt-2 flex justify-center space-x-4">
+            <select
+              id="birthYear"
+              value={birthYear}
+              onChange={handleBirthYearChange}
+              className="p-3 border-2 border-gray-300 rounded-md"
+            >
+              {[...Array(100)].map((_, index) => {
+                const year = 2023 - index;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+            <select
+              id="birthMonth"
+              value={birthMonth}
+              onChange={handleBirthMonthChange}
+              className="p-3 border-2 border-gray-300 rounded-md"
+            >
+              {[...Array(12)].map((_, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1}
+                </option>
+              ))}
+            </select>
+            <select
+              id="birthDay"
+              value={birthDay}
+              onChange={handleBirthDayChange}
+              className="p-3 border-2 border-gray-300 rounded-md"
+            >
+              {[...Array(31)].map((_, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* 80歳まで生きるとしたら */}
+        <div className="mb-8 text-center text-xl text-gray-600">
+          80歳まで生きるとしたら
+        </div>
+
+        <div className="space-y-6">
+          {/* 残り日数 */}
+          <div className="bg-gradient-to-r from-teal-300 to-teal-500 text-white p-6 rounded-xl shadow-md">
+            <h2 className="text-2xl font-semibold">残り日数</h2>
+            <p className="text-4xl font-bold">{remainingDays} 日</p>
+            <div className="mt-4">
+              <div className="relative pt-1">
+                <div className="flex mb-2 items-center justify-between">
+                  <span className="text-sm font-medium text-teal-800">残り時間</span>
+                </div>
+                <div className="flex mb-2 items-center justify-between">
+                  <div className="w-full bg-teal-200 rounded-full h-2.5">
+                    <div
+                      className="bg-teal-600 h-2.5 rounded-full"
+                      style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 残り食事回数 */}
+          <div className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-white p-6 rounded-xl shadow-md">
+            <h2 className="text-2xl font-semibold">残り食事回数</h2>
+            <p className="text-4xl font-bold">{remainingMeals} 回</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
